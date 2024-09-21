@@ -28,32 +28,6 @@ const datos = [
     }
 ];
 
-
-/* desarrolladoresJavascript */
-[
-    {
-        "id": 1,
-        "nombre": "Juan",
-        "habilidades": ["JavaScript", "HTML", "CSS"],
-        "proyectos": [
-            { "id": 1, "nombre": "Proyecto 1" },
-            { "id": 2, "nombre": "Proyecto 2" }
-        ]
-    }
-]
-
-
-/* nombresProyectos */
-[
-    'Proyecto 1',
-    'Proyecto 2',
-    'Proyecto 3',
-    'Proyecto 4',
-    'Proyecto 5',
-    'Proyecto 6'
-]
-
-
 /*
 Esta funcion devuelve el listado de los programadores que cumplan con la habilidad requerida. 
 Me gustaria ampliar getData() para que buscase tambien por las otras propiedades de los objetos,
@@ -68,17 +42,22 @@ const getData = (property, value) => {
 }
 
 /*
-
+Listado de todos los proyectos encontrados.
 */
 const getDataProjects = () => {
-    return datos.map(({proyectos, index}) => proyectos[index]);
+    let outputProyectos = [];
+    datos.map((dato) => dato.proyectos.map((proyecto) => {
+        outputProyectos.push(proyecto.nombre);
+    }));
+    return outputProyectos;
 }
+
+
+//
 
 console.log(getData('habilidades', 'JavaScript'));
 
-console.log(getData('habilidades', 'Hibernate'));
-
-//
+//console.log(getData('habilidades', 'Hibernate'));
 
 console.log(getDataProjects());
 
