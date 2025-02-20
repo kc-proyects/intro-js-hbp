@@ -66,6 +66,14 @@ const musicCatalog = () => {
         );
   };
 
+  const findPlaylist = (playlistName) => {
+    const playlist = playlists.find((playlist) => playlist.name === playlistName);
+    if (!playlist) {
+      throw new Error('Playlist not found');
+    }
+    return playlist;
+  }
+
   /**
    * Removes a song from a specific playlist.
    * @param {string} playlistName - The name of the playlist to remove the song from.
@@ -73,8 +81,19 @@ const musicCatalog = () => {
    * @throws {Error} If the playlist or song is not found.
    */
   const removeSongFromPlaylist = (playlistName, title) => {
-    const playlistSelected = playlists.find((playlist) => playlist.name === playlistName);
-    playlistSelected.songs = playlistSelected.songs.filter(song => song.title !== title);
+    const hasPlaylist = findPlaylist(playlistName);
+    if (!hasPlaylist.songs.find((song) => song.title === title)) {
+      throw new Error('Song not found');
+    }
+    playlists = playlists.map((playlist) => {
+      if (playlist.name === playlistName) {
+        return {
+          ...playlist,
+          songs: playlist.songs.filter((song) => song.title !== title),
+        };
+      }
+    return playlist;
+});
   };
 
   /**
