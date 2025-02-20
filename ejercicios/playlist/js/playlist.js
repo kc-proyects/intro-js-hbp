@@ -28,11 +28,12 @@ const musicCatalog = () => {
    * @param {string} playlistName - The name of the new playlist.
    */
   const createPlaylist = (playlistName, songs = []) => {
-    const playlist = {
-      name: playlistName,
-      songs: songs,
-    };
-    playlists.push(playlist);
+      const newPlaylist = {
+          name: playlistName,
+          songs: songs,
+      };
+    
+      playlists = [...playlists, newPlaylist];
   };
 
   /**
@@ -58,8 +59,11 @@ const musicCatalog = () => {
    * @throws {Error} If the playlist is not found.
    */
   const addSongToPlaylist = (playlistName, song) => {
-    const playlistSelected = playlists.find((playlist) => playlist.name === playlistName);
-    playlistSelected.songs.push(song);
+    playlists = playlists.map((playlist) =>
+        playlist.name === playlistName
+            ? { ...playlist, songs: [...playlist.songs, song] } // copia de la playlist con la nueva cancion
+            : playlist
+        );
   };
 
   /**
@@ -81,15 +85,17 @@ const musicCatalog = () => {
 
   // COMENTARIO: entiendo que solo puede haber una cancion favorita por playlist.
   const favoriteSong = (playlistName, title) => {
-    const playlistSelected = playlists.find((playlist) => playlist.name === playlistName);
-    const songSelected = playlistSelected.songs.find((song) => song.title === title);
-    const currentFavorite = playlistSelected.songs.find((song) => song.favorite === true);
-    
-    if (currentFavorite) {
-      currentFavorite.favorite = false;
-    }
-    songSelected.favorite = true;
+    playlists = playlists.map((playlist) => {
+        if (playlist.name !== playlistName) return playlist;
 
+        return {
+            ...playlist,
+            songs: playlist.songs.map((song) => ({
+                ...song,
+                favorite: song.title === title
+            }))
+        };
+    });
   };
 
   /**
@@ -115,5 +121,23 @@ const musicCatalog = () => {
 
   return { createPlaylist, addSongToPlaylist, removeSongFromPlaylist, sortSongs, getAllPlaylists, removePlaylist, favoriteSong };
 };
+
+// Codigo facilitado por Kevin en la correcion de la practica, para comprobar si el comportamiento es el correcto (inmutabilidad de playlists):
+const catalog = musicCatalog();
+const song = {
+    title: "VIP",
+    artist: "44 Kid",
+    genre: "Trap",
+    duration: 3.30
+};
+catalog.createPlaylist('Trap');
+catalog.createPlaylist('Pop');
+catalog.addSongToPlaylist('Trap', song);
+const originalPlaylistWithoutPopSong = catalog.getAllPlaylists();
+console.log(originalPlaylistWithoutPopSong); // Pop no tiene canciones en esta variable
+catalog.addSongToPlaylist('Pop', song);
+const playlistAfterAddingSongToPop = catalog.getAllPlaylists();
+console.log(playlistAfterAddingSongToPop); // Esta variable que fue escrita después de añadir una canción a pop tiene ese cancion
+console.log(originalPlaylistWithoutPopSong); // la variable anterior no debería de cambiar ya que fue definida antes de añadir la canción. Pero con tú codigo si lo hace lo cual está mal
 
 export default musicCatalog;
